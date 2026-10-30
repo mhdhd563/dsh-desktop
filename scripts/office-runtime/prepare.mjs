@@ -8,10 +8,18 @@ import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { unzipSync } from 'fflate'
 import { x as extractTar } from 'tar'
+import { EnvHttpProxyAgent, setGlobalDispatcher } from 'undici'
 
 const require = createRequire(import.meta.url)
 const project = resolve(import.meta.dirname, '../..')
 const lock = JSON.parse(await readFile(new URL('./lock.json', import.meta.url), 'utf8'))
+
+// Node's global fetch does not read HTTPS_PROXY/HTTP_PROXY by default, which
+// breaks the locked downloads behind a local proxy. Route them through the
+// environment proxy only when one is configured; otherwise keep direct access.
+if (process.env.HTTP_PROXY || process.env.HTTPS_PROXY || process.env.http_proxy || process.env.https_proxy) {
+  setGlobalDispatcher(new EnvHttpProxyAgent())
+}
 
 export function officeTarget(platform = process.platform, arch = process.arch) {
   const target = `${platform === 'darwin' ? 'mac' : platform === 'win32' ? 'win' : platform}-${arch}`

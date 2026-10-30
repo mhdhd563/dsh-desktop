@@ -2,7 +2,11 @@ import { mkdir, open, rename, unlink, writeFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
 import { randomUUID } from 'node:crypto'
 
+// Self-hosted markets can override the published catalog endpoint without
+// rebuilding the app. The constant keeps the public default so existing tests
+// that assert its value remain valid.
 const DEFAULT_CATALOG_URL = 'https://market.dshdesktop.com/index.json'
+const CATALOG_URL = process.env.DSH_WORKBENCH_CATALOG_URL || DEFAULT_CATALOG_URL
 const MAX_CATALOG_BYTES = 2 * 1024 * 1024
 const FETCH_TIMEOUT_MS = 30_000
 const CACHE_MAX_AGE_MS = 15 * 60 * 1000
@@ -66,7 +70,7 @@ export function validatePublishedCatalog(value) {
 }
 
 /** cachePath is optional; cachedOnly reads snapshots without starting or awaiting network work. */
-export function createCatalogReader({ fetch: fetchCatalog = globalThis.fetch, url = DEFAULT_CATALOG_URL, now = Date.now, cachePath, onWarning } = {}) {
+export function createCatalogReader({ fetch: fetchCatalog = globalThis.fetch, url = CATALOG_URL, now = Date.now, cachePath, onWarning } = {}) {
   let cached
   let fetchedAt = 0
   let pending
