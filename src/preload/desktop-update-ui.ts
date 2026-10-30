@@ -10,7 +10,6 @@ import {
   rollbackEmptyMessage,
   type UpdateLocale
 } from './update-view'
-import brandMark from '../../build/brand-mark.svg?raw'
 const ROOT_ID = 'dsh-desktop-update-root'
 let locale: UpdateLocale = 'en'
 let detailOpen = false
@@ -512,7 +511,7 @@ const styles = `
   .row { display:flex; gap:12px; align-items:center; }
   .body { min-width:0; flex:1; }
   .centered .row { display:block; }
-  .app-icon { display:inline-flex; width:56px; height:56px; padding:6px; background:#0d1716; color:#fff; border-radius:12px; flex:none; position:relative; }
+  .app-icon { display:inline-flex; width:56px; height:56px; padding:6px; background:transparent; color:transparent; border-radius:12px; flex:none; position:relative; }
   .app-icon svg { width:100%; height:100%; }
   .app-icon svg path { fill:currentColor; }
   .notification { padding:16px; }
@@ -575,8 +574,6 @@ const aboutStyles = styles
 function appIcon(): HTMLSpanElement {
   const icon = element('span', 'app-icon')
   icon.setAttribute('aria-hidden', 'true')
-  // Trusted, bundled branding; release text is always assigned with textContent.
-  icon.innerHTML = brandMark
   return icon
 }
 
